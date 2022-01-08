@@ -6,7 +6,10 @@ Takes four pictures a few seconds apart and creates a photo collage. These can b
 Originally wrote this app for a birthday party after looking into photo booth rental and realizing that many of them were just an iPad, a light, a printer and some props. Since I already had a tripod, a ring light, a printer and an Android tablet I could create my own, but I couldn't find an app that I liked.
 
 Here is my setup:
+
+
 ![Setup](/pics/setup.jpg?raw=true "Photo Booth Setup")
+
 
 I bought a TECELKS tripod mount adapter online for under $10 to attach the tablet to the tripod which was just big enough to hold my 10" Lenovo tablet in landscape mode.
 
