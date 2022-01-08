@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Photo Booth</string>
+    <string name="tap_anywhere_to_start">Tap anywhere to start</string>
+    <string name="photo_booth_image">Photo booth image</string>
+    <string name="retake">Retake</string>
+    <string name="print">Print</string>
+    <string name="start">Start</string>
+    <string name="lets_go">Let\'s Go</string>
+</resources>
