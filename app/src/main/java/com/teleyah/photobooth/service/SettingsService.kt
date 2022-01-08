@@ -25,5 +25,5 @@ class SettingsService  @Inject constructor(@ApplicationContext private val conte
         }
     }
 
-    val albumName = "Josh's 50th Birthday"
+    val albumName = "Photo Booth"
 }

@@ -38,47 +38,50 @@
         android:id="@+id/text_scan_me"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SCAN TO GET A DIGITAL COPY"
+        android:layout_marginTop="32dp"
+        android:text="@string/scan_to_get_a_digital_copy"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toTopOf="@id/image_qr_code"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/image_down_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_arrow_downward_24"
-        app:layout_constraintBottom_toTopOf="@id/image_qr_code"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_scan_me"
-        app:layout_constraintVertical_chainStyle="spread" />
+        android:contentDescription="@string/down_arrow" />
 
     <ImageView
         android:id="@+id/image_qr_code"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        app:layout_constraintHeight_min="150dp"
+        app:layout_constraintWidth_min="150dp"
+        app:layout_constraintHeight_max="200dp"
+        app:layout_constraintWidth_max="200dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/text_or"
+
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_down_arrow"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="@string/qr_code" />
 
     <TextView
         android:id="@+id/text_or"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OR"
+        android:text="@string/or"
         android:textColor="@color/white"
-        android:textSize="36sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/button_print"
         app:layout_constraintEnd_toEndOf="@id/guideline"
@@ -93,16 +96,14 @@
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/print"
-        android:drawableTop="@drawable/ic_baseline_print_24"
+        android:drawableLeft="@drawable/ic_baseline_print_24"
         android:drawableTint="@color/white"
         android:padding="24dp"
-        android:src="@drawable/ic_baseline_print_24"
-        android:text="Print"
-        android:textSize="32sp"
+        android:text="@string/print"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_or" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button_done"
@@ -112,13 +113,11 @@
         android:layout_marginEnd="64dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/print"
-        android:drawableTop="@drawable/ic_baseline_done_24"
+        android:drawableLeft="@drawable/ic_baseline_done_24"
         android:drawableTint="@color/white"
         android:padding="24dp"
-        android:src="@drawable/ic_baseline_done_24"
-        android:text="All Done!"
-        android:textSize="32sp"
-        app:layout_constraintTop_toBottomOf="@id/image_preview"
+        android:text="@string/all_done"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline" />

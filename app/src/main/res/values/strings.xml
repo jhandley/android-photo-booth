@@ -6,4 +6,12 @@
     <string name="print">Print</string>
     <string name="start">Start</string>
     <string name="lets_go">Let\'s Go</string>
+    <string name="scan_to_get_a_digital_copy">SCAN TO GET A DIGITAL COPY</string>
+    <string name="down_arrow">Down arrow</string>
+    <string name="qr_code">QR Code</string>
+    <string name="or">OR</string>
+    <string name="all_done">All Done!</string>
+    <string name="keep_it">Keep it!</string>
+    <string name="oops_try_again">Oops! Try again</string>
+    <string name="countdown">Countdown</string>
 </resources>
