@@ -1,6 +1,10 @@
 package com.teleyah.photobooth.view
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -35,6 +39,7 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class CameraActivity : AppCompatActivity() {
@@ -135,6 +140,7 @@ class CameraActivity : AppCompatActivity() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
+        flashScreen()
         mediaActionSound.play(MediaActionSound.SHUTTER_CLICK)
 
         imageCapture.takePicture(ContextCompat.getMainExecutor(this), object :
@@ -146,6 +152,29 @@ class CameraActivity : AppCompatActivity() {
             }
         }
         )
+    }
+
+    private fun flashScreen() {
+        binding.imageWhiteScreen.alpha = 0f
+        binding.imageWhiteScreen.visibility = View.VISIBLE
+        AnimatorSet().apply {
+            playSequentially(
+                ObjectAnimator.ofFloat(binding.imageWhiteScreen, "alpha", 0f, 1f).apply { duration = 80 },
+                ObjectAnimator.ofFloat(binding.imageWhiteScreen, "alpha", 1f, 0f).apply { duration = 80 }
+            )
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    super.onAnimationEnd(animation)
+                    binding.imageWhiteScreen.visibility = View.GONE
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                    super.onAnimationCancel(animation)
+                    binding.imageWhiteScreen.visibility = View.GONE
+                }
+            })
+            start()
+        }
     }
 
     private fun startCamera() {

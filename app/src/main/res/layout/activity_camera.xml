@@ -37,4 +37,12 @@
         android:textSize="48sp"
         />
 
+    <ImageView
+        android:id="@+id/image_white_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:src="@color/white"
+        tools:ignore="ContentDescription" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
