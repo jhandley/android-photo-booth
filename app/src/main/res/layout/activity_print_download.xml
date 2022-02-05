@@ -55,6 +55,7 @@
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_scan_me"
+        app:layout_constraintBottom_toTopOf="@id/image_qr_code"
         android:contentDescription="@string/down_arrow" />
 
     <ImageView
@@ -67,11 +68,10 @@
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_down_arrow"
+        app:layout_constraintBottom_toTopOf="@+id/text_or"
         tools:src="@tools:sample/avatars"
         android:contentDescription="@string/qr_code" />
 
