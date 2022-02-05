@@ -14,4 +14,6 @@
     <string name="keep_it">Keep it!</string>
     <string name="oops_try_again">Oops! Try again</string>
     <string name="countdown">Countdown</string>
+    <string name="connecting_to_google_photos">Connecting to Google Photos…</string>
+    <string name="photo_booth_title">Photo booth title</string>
 </resources>

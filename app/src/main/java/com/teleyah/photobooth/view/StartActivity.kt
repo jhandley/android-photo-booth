@@ -1,28 +1,20 @@
 package com.teleyah.photobooth.view
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
 import com.teleyah.photobooth.databinding.ActivityStartBinding
-import com.teleyah.photobooth.service.GooglePhotosService
 import com.teleyah.photobooth.service.SettingsService
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 
 
@@ -30,45 +22,11 @@ import javax.inject.Inject
 class StartActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var googlePhotosService: GooglePhotosService
-
-    @Inject
     lateinit var settingsService: SettingsService
 
     private lateinit var binding: ActivityStartBinding
 
-    companion object {
-        private const val RC_SIGN_IN = 11
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.GET_ACCOUNTS)
-    }
-
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // TODO: additional prompt if permissions refused
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-            } else {
-                Toast.makeText(
-                    this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                finish()
-            }
-        }
-    }
-
-    private lateinit var mGoogleSignInClient : GoogleSignInClient
+    private val viewModel: StartActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,68 +34,49 @@ class StartActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        if (!allPermissionsGranted()) {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-        }
-
-        // TODO: move signin to settings page
-        val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestScopes(GooglePhotosService.scopes.first(), *GooglePhotosService.scopes)
-            .requestIdToken(GooglePhotosService.clientId)
-            .requestServerAuthCode(GooglePhotosService.clientId,false)
-            .requestEmail()
-            .build()
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, signInOptions)
-
         binding.buttonStart.setOnClickListener {
             startActivity(Intent(this, CameraActivity::class.java))
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
-        googleSignIn()
-    }
+        val signInResultHandler =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                viewModel.onSignInResult(it)
+            }
 
-    private fun googleSignIn() {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account?.serverAuthCode == null) {
-            startActivityForResult(mGoogleSignInClient.signInIntent, RC_SIGN_IN)
-        } else {
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    googlePhotosService.initialize(account, settingsService.albumName)
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to initialize Google Photos")
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                if (viewModel.signInState.value !is SignInState.Success)
+                    viewModel.doGoogleSignIn(this@StartActivity, signInResultHandler)
+
+                viewModel.signInState.collect { state ->
+
+                    when (state) {
+                        is SignInState.Success -> {
+                            binding.buttonStart.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.INVISIBLE
+                            binding.progressText.visibility = View.INVISIBLE
+                        }
+                        is SignInState.Error -> {
+                            binding.buttonStart.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.INVISIBLE
+                            binding.progressText.visibility = View.INVISIBLE
+                            Snackbar.make(
+                                binding.layoutStart,
+                                "Failed to sign in to Google Photos.",
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                        SignInState.InProgress -> {
+                            binding.buttonStart.visibility = View.INVISIBLE
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.progressText.visibility = View.VISIBLE
+                        }
+                    }
                 }
+
             }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
-        }
-    }
-
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-            GlobalScope.launch(Dispatchers.IO) {
-                googlePhotosService.initialize(account, settingsService.albumName)
-            }
-            Timber.i("Google sign success ${account.email}")
-        } catch (e: ApiException) {
-            Timber.e(e, "sign in failed ${e.statusCode}")
         }
     }
 }

@@ -53,9 +53,14 @@ class GooglePhotosService @Inject constructor() {
     lateinit var album: Album
     lateinit var sharedAlbumUrl: String
 
-    suspend fun initialize(account: GoogleSignInAccount, albumName: String) {
+    suspend fun login(account: GoogleSignInAccount) {
         withContext(ioDispatcher) {
             createClient(account)
+        }
+    }
+
+    suspend fun setAlbumName(albumName: String) {
+        withContext(ioDispatcher) {
             createSharedAlbum(albumName)
         }
     }
@@ -127,20 +132,22 @@ class GooglePhotosService @Inject constructor() {
     }
 
     private suspend fun createClient(account: GoogleSignInAccount) {
-        Timber.d("Connecting to Google Photos")
-        accessToken = authService.authorize(account, clientId, clientSecret)
-        val credentials = UserCredentials.newBuilder()
-            .setClientId(clientId)
-            .setClientSecret(clientSecret)
-            .setAccessToken(com.google.auth.oauth2.AccessToken(accessToken.access_token, null))
-            .build()
+        runCatching {
+            Timber.d("Connecting to Google Photos")
+            accessToken = authService.authorize(account, clientId, clientSecret)
+            val credentials = UserCredentials.newBuilder()
+                .setClientId(clientId)
+                .setClientSecret(clientSecret)
+                .setAccessToken(com.google.auth.oauth2.AccessToken(accessToken.access_token, null))
+                .build()
 
-        val photosClientSettings = PhotosLibrarySettings.newBuilder()
-            .setCredentialsProvider(
-                FixedCredentialsProvider.create(credentials)
-            )
-            .build()
-        client = PhotosLibraryClient.initialize(photosClientSettings)
+            val photosClientSettings = PhotosLibrarySettings.newBuilder()
+                .setCredentialsProvider(
+                    FixedCredentialsProvider.create(credentials)
+                )
+                .build()
+            client = PhotosLibraryClient.initialize(photosClientSettings)
+        }.getOrThrow()
     }
 }
 
