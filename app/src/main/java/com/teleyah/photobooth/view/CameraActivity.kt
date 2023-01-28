@@ -11,7 +11,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaActionSound
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -32,10 +31,8 @@ import com.teleyah.photobooth.R
 import com.teleyah.photobooth.databinding.ActivityCameraBinding
 import com.teleyah.photobooth.service.PhotoCollageService
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -163,12 +160,12 @@ class CameraActivity : AppCompatActivity() {
                 ObjectAnimator.ofFloat(binding.imageWhiteScreen, "alpha", 1f, 0f).apply { duration = 80 }
             )
             addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
+                override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     binding.imageWhiteScreen.visibility = View.GONE
                 }
 
-                override fun onAnimationCancel(animation: Animator?) {
+                override fun onAnimationCancel(animation: Animator) {
                     super.onAnimationCancel(animation)
                     binding.imageWhiteScreen.visibility = View.GONE
                 }
@@ -209,7 +206,7 @@ class CameraActivity : AppCompatActivity() {
                 )
 
             } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
+                Timber.e(exc, "Camera use case binding failed")
             }
 
         }, ContextCompat.getMainExecutor(this))
@@ -246,8 +243,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "CameraXBasic"
-
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
